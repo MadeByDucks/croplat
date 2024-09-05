@@ -2,19 +2,91 @@
 //
 
 #include <iostream>
+#include <string>
+#include <vector>
+#include "log.h"
 
-int main()
+const char* VERSION_STR = "Beta 0.1";
+
+std::string buildGeneralUsage()
 {
-    std::cout << "Hello World!\n";
+    std::string usage = "";
+    usage += "Usage: coplat.exe \n";
+    usage += "    /h           help/usage\n";
+    usage += "    /help        help/usage\n";
+    usage += "    /v /ver      version\n";
+    usage += "    /log         logging test\n";
+    usage += "\n";
+    return usage;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+void showUsage()
+{
+    std::string usage = buildGeneralUsage();
+    std::cout << usage << std::endl;
+}
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+void testLogging()
+{
+/*
+//std::cout << "StressTester Version" << "\n";
+//std::cout << "StressTester Version" << "\n";
+//std::cout << "StressTester Version" << "\n";
+
+// TRACE("TESTING TRACE");
+ std::string tmp = "testind debug testind debug testind debug testind debug";
+
+ std::wostringstream os_;
+ os_ << tmp.c_str();
+ OutputDebugStringW(os_.str().c_str());
+
+ LOG_DEBUG(main, "TESTING LOGS: ");
+ LOG_DEBUG(main, "TESTING LOGS: ");
+ LOG_DEBUG(main, "TESTING LOGS: ");
+ */
+
+
+    Logger::getInstance()->log("This is a test log message.");
+    Logger::getInstance()->log("Logging another message.");
+    LOG_DEBUG(testLogging, "TESTING LOG_DEBUG");
+}
+
+void processParams(std::vector<std::string> &args, bool& abort)
+{
+    //process all from argc/argv
+    //or process one from functions params
+    for (int cmd = 0; cmd < args.size(); cmd++)
+    {
+        if ((args[cmd] == "/h") || (args[cmd] == "/help"))
+        {
+            showUsage();
+            abort = true;
+        }
+        else if ((args[cmd] == "/v") || (args[cmd] == "/ver") || (args[cmd] == "/version"))
+        {
+            std::cout << "Version: " << VERSION_STR << std::endl;
+            abort = true;
+        }
+        else if (args[cmd] == "/log")
+        {
+            testLogging();
+        }
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    bool abort = false;
+    std::vector<std::string> args(argv + 1, argv + argc);
+
+    if (args.size() == 0)
+    {
+        showUsage();
+        abort = true;
+    }
+
+    if (!abort)
+    {
+        processParams(args, abort);
+    }
+}
